@@ -1,0 +1,1 @@
+changed export of exoplanetsModel.js to work with require
