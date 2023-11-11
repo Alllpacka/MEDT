@@ -3,11 +3,13 @@ import {exoplanetsModel} from "../../models/exoplanetsModel.js";
 export default function (exoplanetsService) {
     let operations = {
         GET: getById,
-        PUT,
-        DELETE
+        PUT: updateById,
+        DELETE: deleteById
     };
 
     function getById(request, response, next) {
+        console.log(request);
+
         const exoplanet = exoplanetsModel.exoplanets.find(x => x.id == request.params.id);
         if (exoplanet !== undefined) {
             response
@@ -18,10 +20,37 @@ export default function (exoplanetsService) {
         }
     };
 
-    function PUT(request, response, next) {
+    function updateById(request, response, next) {
+        const id = parseInt(request.params.id);
+        const updateExo = request.body;
+
+        console.log(updateExo);
+    
+        const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
+    
+        if (indexOfChange == -1) {
+            response.status(404).send('404 error: Exoplanet not found')
+        } else {
+            exoplanetsModel.exoplanets[indexOfChange] = {
+                ...exoplanetsModel.exoplanets[indexOfChange], ...updateExo
+            };
+
+            console.log(exoplanetsModel.exoplanets[indexOfChange]);
+    
+            response.status(200).send('Exoplanet updated');
+        }
     };
 
-    function DELETE(request, response, next) {
+    function deleteById(request, response, next) {
+        const id = parseInt(request.params.id);
+        const indexOfDel = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
+    
+        if (indexOfDel == -1) {
+            response.status(404).send('404 error: exoplanet not found');
+        } else {
+            exoplanetsModel.exoplanets.slice(indexOfDel, 1);
+            response.status(200).send('exoplanet deleted', exoplanets[id]);
+        }
     };
 
     getById.apiDoc = {
@@ -42,6 +71,89 @@ export default function (exoplanetsService) {
         responses: {
             200: {
                 description: 'an exoplanet with the given id.',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/exoplanet'
+                        }
+                    },
+                    'application/xml': {
+                        schema: {
+                            $ref: '#/components/schemas/exoplanet'
+                        }
+                    }
+                }
+            },
+            404: {
+                description: 'exoplanet with given id does not exist.'
+            }
+        }
+    };
+
+    updateById.apiDoc = {
+        summary: 'changes a single exoplanet by id.',
+        operationId: 'changeExoplanetById',
+        parameters: [
+            {
+                name: 'id',
+                in: 'path',
+                description: 'id of exoplanet to change.',
+                required: true,
+                schema: {
+                    type: 'integer',
+                    format: 'int64'
+                }
+            },
+            {
+                name: 'planet name',
+                in: 'path',
+                description: 'new planet name.',
+                required: true,
+                schema: {
+                    type: 'string'
+                }
+            }
+        ],
+        responses: {
+            200: {
+                description: 'changed an exoplanet with the given id.',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/exoplanet'
+                        }
+                    },
+                    'application/xml': {
+                        schema: {
+                            $ref: '#/components/schemas/exoplanet'
+                        }
+                    }
+                }
+            },
+            404: {
+                description: 'exoplanet with given id does not exist.'
+            }
+        }
+    };
+
+    deleteById.apiDoc = {
+        summary: 'deletes a single exoplanet by id.',
+        operationId: 'deleteExoplanetById',
+        parameters: [
+            {
+                name: 'id',
+                in: 'path',
+                description: 'id of exoplanet to delete.',
+                required: true,
+                schema: {
+                    type: 'integer',
+                    format: 'int64'
+                }
+            }
+        ],
+        responses: {
+            200: {
+                description: 'deleted an exoplanet with the given id.',
                 content: {
                     'application/json': {
                         schema: {

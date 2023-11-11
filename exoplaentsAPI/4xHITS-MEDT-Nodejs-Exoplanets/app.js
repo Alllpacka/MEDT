@@ -3,16 +3,14 @@ import {initialize} from 'express-openapi';
 import exoplanetsService from './api/v1/services/exoplanetsService.js';
 import apiDoc from './api/v1/api-doc.js';
 import swaggerUi from "swagger-ui-express";
+import logging from './middleware/logging.js'
 
 const app = express();
 const port = 8000;
 
 
-
-app.use((request, response, next) => {
-    console.log(`${new Date().toLocaleString()} - ${request.method} ${request.url} from ${request.ip}`);
-    next();
-});
+app.use(logging);
+app.use(express.json());
 
 await initialize({
     app,
