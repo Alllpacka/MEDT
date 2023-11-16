@@ -1,3 +1,4 @@
+import { json } from "express";
 import {exoplanetsModel} from "../../models/exoplanetsModel.js";
 
 export default function (exoplanetsService) {
@@ -21,7 +22,13 @@ export default function (exoplanetsService) {
     };
 
     function updateById(request, response, next) {
-        const id = parseInt(request.params.id);
+        console.log(request);
+
+        // const id = parseInt(request.params.id);
+        const id = request.params.id;
+        
+        console.log(id);
+
         const updateExo = request.body;
 
         console.log(updateExo);
@@ -106,7 +113,7 @@ export default function (exoplanetsService) {
             },
             {
                 name: 'planet name',
-                in: 'path',
+                in: 'body',
                 description: 'new planet name.',
                 required: true,
                 schema: {
