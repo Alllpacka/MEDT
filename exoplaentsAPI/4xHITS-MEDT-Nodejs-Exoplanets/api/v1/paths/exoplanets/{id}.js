@@ -5,12 +5,10 @@ export default function (exoplanetsService) {
     let operations = {
         GET: getById,
         PUT: updateById,
-        DELETE: deleteById
+        DELETE: deleteById,
     };
 
     function getById(request, response, next) {
-        console.log(request);
-
         const exoplanet = exoplanetsModel.exoplanets.find(x => x.id == request.params.id);
         if (exoplanet !== undefined) {
             response
@@ -22,16 +20,9 @@ export default function (exoplanetsService) {
     };
 
     function updateById(request, response, next) {
-        console.log(request);
-
-        // const id = parseInt(request.params.id);
         const id = request.params.id;
-        
-        console.log(id);
 
         const updateExo = request.body;
-
-        console.log(updateExo);
     
         const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
     
@@ -104,23 +95,23 @@ export default function (exoplanetsService) {
             {
                 name: 'id',
                 in: 'path',
-                description: 'id of exoplanet to change.',
+                description: 'id of exoplanet to return.',
                 required: true,
                 schema: {
                     type: 'integer',
                     format: 'int64'
                 }
-            },
-            {
-                name: 'planet name',
-                in: 'body',
-                description: 'new planet name.',
-                required: true,
-                schema: {
-                    type: 'string'
-                }
             }
         ],
+        requestBody: {
+            content: {
+                'application/json': {
+                    schema: {
+                        $ref: '#/components/schemas/exoplanet'
+                    }
+                }
+            }
+        },
         responses: {
             200: {
                 description: 'changed an exoplanet with the given id.',
