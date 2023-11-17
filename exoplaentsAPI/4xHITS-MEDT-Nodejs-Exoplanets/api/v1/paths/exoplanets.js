@@ -1,4 +1,5 @@
 import apiDoc from '../api-doc.js';
+import {exoplanetsModel} from "../models/exoplanetsModel.js";
 
 export default function (exoplanetsService) {
     let operations = {
@@ -55,6 +56,15 @@ export default function (exoplanetsService) {
         summary: 'creates an exoplanet.',
         operationId: 'createExoplanet',
         parameters: [],
+        requestBody: {
+            content: {
+                'application/json': {
+                    schema: {
+                        $ref: '#/components/schemas/exoplanet'
+                    }
+                }
+            }
+        },
         responses: {
             200: {
                 description: 'created an exoplanet.',
