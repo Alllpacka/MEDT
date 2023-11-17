@@ -46,8 +46,8 @@ export default function (exoplanetsService) {
         if (indexOfDel == -1) {
             response.status(404).send('404 error: exoplanet not found');
         } else {
-            exoplanetsModel.exoplanets.slice(indexOfDel, 1);
-            response.status(200).send('exoplanet deleted', exoplanets[id]);
+            exoplanetsModel.exoplanets.splice(indexOfDel, 1);
+            response.status(200).send('Exoplanet deleted: ' + id);
         }
     };
 
