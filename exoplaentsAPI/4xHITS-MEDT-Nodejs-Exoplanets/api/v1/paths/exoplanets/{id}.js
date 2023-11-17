@@ -1,11 +1,12 @@
 import { json } from "express";
-import {exoplanetsModel} from "../../models/exoplanetsModel.js";
+import { exoplanetsModel } from "../../models/exoplanetsModel.js";
 
 export default function (exoplanetsService) {
     let operations = {
         GET: getById,
         PUT: updateById,
         DELETE: deleteById,
+        PATCH: updateSpecificById
     };
 
     function getById(request, response, next) {
@@ -22,19 +23,13 @@ export default function (exoplanetsService) {
     function updateById(request, response, next) {
         const id = request.params.id;
 
-        const updateExo = request.body;
-    
         const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
-    
+
         if (indexOfChange == -1) {
             response.status(404).send('404 error: Exoplanet not found')
         } else {
-            exoplanetsModel.exoplanets[indexOfChange] = {
-                ...exoplanetsModel.exoplanets[indexOfChange], ...updateExo
-            };
+            exoplanetsModel.exoplanets[indexOfChange] = request.body;
 
-            console.log(exoplanetsModel.exoplanets[indexOfChange]);
-    
             response.status(200).send('Exoplanet updated');
         }
     };
@@ -42,12 +37,30 @@ export default function (exoplanetsService) {
     function deleteById(request, response, next) {
         const id = parseInt(request.params.id);
         const indexOfDel = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
-    
+
         if (indexOfDel == -1) {
             response.status(404).send('404 error: exoplanet not found');
         } else {
             exoplanetsModel.exoplanets.splice(indexOfDel, 1);
             response.status(200).send('Exoplanet deleted: ' + id);
+        }
+    };
+
+    function updateSpecificById(request, response, next) {
+        const id = request.params.id;
+
+        const updateExo = request.body;
+
+        const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
+
+        if (indexOfChange == -1) {
+            response.status(404).send('404 error: Exoplanet not found')
+        } else {
+            exoplanetsModel.exoplanets[indexOfChange] = {
+                ...exoplanetsModel.exoplanets[indexOfChange], ...updateExo
+            };
+
+            response.status(200).send('Exoplanet updated');
         }
     };
 
@@ -152,6 +165,63 @@ export default function (exoplanetsService) {
         responses: {
             200: {
                 description: 'deleted an exoplanet with the given id.',
+                content: {
+                    'application/json': {
+                        schema: {
+                            $ref: '#/components/schemas/exoplanet'
+                        }
+                    },
+                    'application/xml': {
+                        schema: {
+                            $ref: '#/components/schemas/exoplanet'
+                        }
+                    }
+                }
+            },
+            404: {
+                description: 'exoplanet with given id does not exist.'
+            }
+        }
+    };
+
+    updateSpecificById.apiDoc = {
+        summary: 'updates specific information of exoplanet by id',
+        operationId: 'updateSpecificById',
+        requestBody: {
+            content: {
+                'application/json': {
+                    schema: {
+                        type: 'object',
+                        properties: {
+                            planet_name: {
+                                type: 'string'
+                            },
+                            hostname: {
+                                type: 'string'
+                            },
+                            planet_letter: {
+                                type: 'string'
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        parameters: [
+            {
+                name: 'id',
+                in: 'path',
+                description: 'id of exoplanet to change.',
+                required: true,
+                schema: {
+                    type: 'integer',
+                    format: 'int64'
+                }
+            }
+        ],
+        responses: {
+            200: {
+                description: 'updates specific information of exoplanet with the given id.',
                 content: {
                     'application/json': {
                         schema: {
