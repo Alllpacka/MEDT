@@ -1,5 +1,5 @@
 import express from 'express';
-import {initialize} from 'express-openapi';
+import { initialize } from 'express-openapi';
 import exoplanetsService from './api/v1/services/exoplanetsService.js';
 import apiDoc from './api/v1/api-doc.js';
 import swaggerUi from "swagger-ui-express";
@@ -36,6 +36,6 @@ app.use(
     })
 );
 
-app.listen(port,() => {
+app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
