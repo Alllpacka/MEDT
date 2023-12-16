@@ -1,5 +1,5 @@
 import mysql from 'mysql2';
-import mysqlConnection from './dbConfig.js';
+import mysqlConnection from './config/dbConfig.js';
 
 // create the connection to database
 const connection = mysql.createConnection(mysqlConnection);
@@ -19,8 +19,8 @@ const connection = mysql.createConnection(mysqlConnection);
 
 // with placeholder == prepared statement
 connection.query(
-    'SELECT * FROM `discovery_methods` WHERE `id` LIKE ?',
-    ['t%'],
+    'SELECT id, planet_name, hostname, planet_letter FROM `exoplanets` WHERE `id` LIKE ?',
+    ['1'],
     function (err, results) {
         console.log(results);
     }

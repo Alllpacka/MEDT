@@ -1,3 +1,23 @@
+import mysql from 'mysql2/promise';
+import config from '../../../config/dbConfig.js'
+
+// connection to database
+const connection = await mysql.createConnection(config);
+
+export async function getExoplanetById(id) {
+    const [results] = await connection.execute(
+        'SELECT id, planet_name, hostname, planet_letter FROM `exoplanets` WHERE `id` LIKE ?',
+        [id]
+    );
+
+    if (results.length > 0) {
+        console.log(results[0])
+        return results[0]
+    }
+    return undefined;
+}
+
+
 export const exoplanetsModel = {
     exoplanets: [
         {

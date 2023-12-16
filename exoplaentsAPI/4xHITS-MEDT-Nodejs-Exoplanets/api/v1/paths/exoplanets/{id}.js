@@ -1,5 +1,5 @@
-import { json } from "express";
-import { exoplanetsModel } from "../../models/exoplanetsModel.js";
+import {json} from "express";
+import {exoplanetsModel, getExoplanetById} from "../../models/exoplanetsModel.js";
 
 export default function (exoplanetsService) {
     let operations = {
@@ -9,8 +9,9 @@ export default function (exoplanetsService) {
         PATCH: updateSpecificById
     };
 
-    function getById(request, response, next) {
-        const exoplanet = exoplanetsModel.exoplanets.find(x => x.id == request.params.id);
+    async function getById(request, response, next) {
+        // const exoplanet = exoplanetsModel.exoplanets.find(x => x.id == request.params.id);
+        const exoplanet = await getExoplanetById(request.params.id)
         if (exoplanet !== undefined) {
             response
                 .status(200)
@@ -18,14 +19,14 @@ export default function (exoplanetsService) {
         } else {
             response.sendStatus(404);
         }
-    };
+    }
 
     function updateById(request, response, next) {
         const id = request.params.id;
 
-        const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
+        const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id === id);
 
-        if (indexOfChange == -1) {
+        if (indexOfChange === -1) {
             response.status(404).send('404 error: Exoplanet not found')
         } else {
             exoplanetsModel.exoplanets[indexOfChange] = request.body;
@@ -36,9 +37,9 @@ export default function (exoplanetsService) {
 
     function deleteById(request, response, next) {
         const id = parseInt(request.params.id);
-        const indexOfDel = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
+        const indexOfDel = exoplanetsModel.exoplanets.findIndex((planet) => planet.id === id);
 
-        if (indexOfDel == -1) {
+        if (indexOfDel === -1) {
             response.status(404).send('404 error: exoplanet not found');
         } else {
             exoplanetsModel.exoplanets.splice(indexOfDel, 1);
@@ -51,9 +52,9 @@ export default function (exoplanetsService) {
 
         const updateExo = request.body;
 
-        const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id == id);
+        const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id === id);
 
-        if (indexOfChange == -1) {
+        if (indexOfChange === -1) {
             response.status(404).send('404 error: Exoplanet not found')
         } else {
             exoplanetsModel.exoplanets[indexOfChange] = {
