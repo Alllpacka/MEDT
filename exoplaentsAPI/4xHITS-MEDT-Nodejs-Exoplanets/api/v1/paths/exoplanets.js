@@ -1,5 +1,5 @@
 import apiDoc from '../api-doc.js';
-import {exoplanetsModel} from "../models/exoplanetsModel.js";
+import {createExoplanetInDB, getAllExoplanets} from "../models/exoplanetsModel.js";
 
 export default function (exoplanetsService) {
     let operations = {
@@ -7,16 +7,25 @@ export default function (exoplanetsService) {
         POST: createExoplanet
     };
 
-    function getExoplanets(request, response, next) {
-        response
-            .status(200)
-            .json(exoplanetsService.getExoplanets());
+    async function getExoplanets(request, response, next) {
+        const exoplanets = await getAllExoplanets()
+        if (exoplanets !== undefined) {
+            response
+                .status(200)
+                .json(exoplanets);
+        } else {
+            response.sendStatus(404);
+        }
     };
 
-    function createExoplanet(request, response, next) {
+    async function createExoplanet(request, response, next) {
         const exo = request.body;
-        exoplanetsModel.exoplanets.push(exo);
-        response.status(200).send('Added new exoplanet');
+        const exoplanets = await createExoplanetInDB(exo)
+        if (exoplanets !== undefined) {
+            response.status(200).send('Added new exoplanet');
+        } else {
+            response.sendStatus(404);
+        }
     };
 
     // NOTE: We could also use a YAML string here.

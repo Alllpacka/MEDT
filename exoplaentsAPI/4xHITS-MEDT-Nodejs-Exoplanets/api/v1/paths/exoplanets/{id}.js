@@ -35,15 +35,14 @@ export default function (exoplanetsService) {
         }
     };
 
-    function deleteById(request, response, next) {
-        const id = parseInt(request.params.id);
-        const indexOfDel = exoplanetsModel.exoplanets.findIndex((planet) => planet.id === id);
-
-        if (indexOfDel === -1) {
-            response.status(404).send('404 error: exoplanet not found');
+    async function deleteById(request, response, next) {
+        const exoplanet = await getExoplanetById(request.params.id)
+        if (exoplanet !== undefined) {
+            response
+                .status(200)
+                .send('Exoplanet deleted');
         } else {
-            exoplanetsModel.exoplanets.splice(indexOfDel, 1);
-            response.status(200).send('Exoplanet deleted: ' + id);
+            response.sendStatus(404);
         }
     };
 
