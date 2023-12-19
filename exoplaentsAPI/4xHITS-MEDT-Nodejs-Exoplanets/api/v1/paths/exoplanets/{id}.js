@@ -1,12 +1,16 @@
-import {json} from "express";
-import {exoplanetsModel, getExoplanetById} from "../../models/exoplanetsModel.js";
+import {
+    deleteExoplanetById,
+    exoplanetsModel,
+    getExoplanetById,
+    updateExoplanetById
+} from "../../models/exoplanetsModel.js";
 
 export default function (exoplanetsService) {
     let operations = {
         GET: getById,
         PUT: updateById,
         DELETE: deleteById,
-        PATCH: updateSpecificById
+        //PATCH: updateSpecificById
     };
 
     async function getById(request, response, next) {
@@ -21,9 +25,21 @@ export default function (exoplanetsService) {
         }
     }
 
-    function updateById(request, response, next) {
+    async function updateById(request, response, next) {
         const id = request.params.id;
+        const exo = request.body;
 
+        const error = await updateExoplanetById(id, exo);
+
+        if (!error) {
+            response
+                .status(200)
+                .send('Added new exoplanet');
+        } else {
+            response.sendStatus(404);
+        }
+
+        /*
         const indexOfChange = exoplanetsModel.exoplanets.findIndex((planet) => planet.id === id);
 
         if (indexOfChange === -1) {
@@ -32,20 +48,22 @@ export default function (exoplanetsService) {
             exoplanetsModel.exoplanets[indexOfChange] = request.body;
 
             response.status(200).send('Exoplanet updated');
-        }
-    };
+        }*/
+    }
 
     async function deleteById(request, response, next) {
-        const exoplanet = await getExoplanetById(request.params.id)
-        if (exoplanet !== undefined) {
+        const error = await deleteExoplanetById(request.params.id);
+
+        if (!error) {
             response
                 .status(200)
-                .send('Exoplanet deleted');
+                .send('Deleted exoplanet');
         } else {
             response.sendStatus(404);
         }
-    };
+    }
 
+    /*
     function updateSpecificById(request, response, next) {
         const id = request.params.id;
 
@@ -62,7 +80,8 @@ export default function (exoplanetsService) {
 
             response.status(200).send('Exoplanet updated');
         }
-    };
+    }
+    */
 
     getById.apiDoc = {
         summary: 'returns a single exoplanet by id.',
@@ -108,7 +127,7 @@ export default function (exoplanetsService) {
             {
                 name: 'id',
                 in: 'path',
-                description: 'id of exoplanet to return.',
+                description: 'id of exoplanet to update.',
                 required: true,
                 schema: {
                     type: 'integer',
@@ -184,6 +203,7 @@ export default function (exoplanetsService) {
         }
     };
 
+    /*
     updateSpecificById.apiDoc = {
         summary: 'updates specific information of exoplanet by id',
         operationId: 'updateSpecificById',
@@ -240,6 +260,7 @@ export default function (exoplanetsService) {
             }
         }
     };
+    */
 
     return operations;
 };

@@ -16,17 +16,19 @@ export default function (exoplanetsService) {
         } else {
             response.sendStatus(404);
         }
-    };
+    }
 
     async function createExoplanet(request, response, next) {
         const exo = request.body;
-        const exoplanets = await createExoplanetInDB(exo)
-        if (exoplanets !== undefined) {
-            response.status(200).send('Added new exoplanet');
+        const error = await createExoplanetInDB(exo)
+        if (!error) {
+            response
+                .status(200)
+                .send('Added new exoplanet');
         } else {
             response.sendStatus(404);
         }
-    };
+    }
 
     // NOTE: We could also use a YAML string here.
     getExoplanets.apiDoc = {

@@ -28,27 +28,41 @@ export async function getExoplanetById(id) {
 }
 
 export async function createExoplanetInDB(exo) {
-    const [results] = await connection.execute(
-        'INSERT INTO `exoplanets` (planet_name, hostname, planet_letter, ecliptic_longitude, ecliptic_latitude, galactic_latitude, galactic_longitude) VALUES (?,?,?,0,0,0,0)', [exo.planet_name, exo.hostname, exo.planet_letter]
-    );
+    await connection.query(
+        'INSERT INTO `exoplanets` (planet_name, hostname, planet_letter, ecliptic_longitude, ecliptic_latitude, galactic_latitude, galactic_longitude) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [exo.planet_name, exo.hostname, exo.planet_letter, 0, 0, 0, 0],
+        (error, results) => {
+            if (error) {
+                console.log({error: error});
+                return error;
+            }
+        });
+    return undefined;
+}
 
-    if (results.length > 0) {
-        console.log(results[0])
-        return results[0]
-    }
+export async function updateExoplanetById(id, exo) {
+    await connection.query(
+        'UPDATE `exoplanets` SET planet_name = ?, hostname = ?, planet_letter = ? WHERE id = ?',
+        [exo.planet_name, exo.hostname, exo.planet_letter, id],
+        (error, results) => {
+            if (error) {
+                console.log({error: error});
+                return error;
+            }
+        });
     return undefined;
 }
 
 export async function deleteExoplanetById(id) {
-    const [results] = await connection.execute(
+    await connection.execute(
         'DELETE FROM `exoplanets` WHERE `id` LIKE ?',
-        [id]
-    );
-
-    if (results.length > 0) {
-        console.log(results[0])
-        return results[0]
-    }
+        [id],
+        (error, results) => {
+            if (error) {
+                console.log({error: error});
+                return error;
+            }
+        });
     return undefined;
 }
 

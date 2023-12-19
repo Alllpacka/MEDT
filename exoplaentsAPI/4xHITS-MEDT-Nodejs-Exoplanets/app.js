@@ -32,6 +32,7 @@ app.use(
     swaggerUi.setup(null, {
         swaggerOptions: {
             url: `http://localhost:${port}/api/v1/api-docs`,
+            requestTimeout: 20000  // 20sec
         },
     })
 );
